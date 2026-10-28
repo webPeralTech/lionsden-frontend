@@ -3,18 +3,14 @@ import type { IconButtonProps } from '@mui/material/IconButton';
 import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import Popover from '@mui/material/Popover';
 import Divider from '@mui/material/Divider';
-import MenuList from '@mui/material/MenuList';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 
-import { useRouter, usePathname } from 'src/routes/hooks';
-
-import { _myAccount } from 'src/_mock';
+import { useAuth } from 'src/auth/auth-context';
 
 // ----------------------------------------------------------------------
 
@@ -27,11 +23,8 @@ export type AccountPopoverProps = IconButtonProps & {
   }[];
 };
 
-export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps) {
-  const router = useRouter();
-
-  const pathname = usePathname();
-
+export function AccountPopover({ sx, ...other }: AccountPopoverProps) {
+  const { user, logout } = useAuth();
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
@@ -42,32 +35,60 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
     setOpenPopover(null);
   }, []);
 
-  const handleClickItem = useCallback(
-    (path: string) => {
-      handleClosePopover();
-      router.push(path);
-    },
-    [handleClosePopover, router]
-  );
+  const handleLogout = async () => {
+    handleClosePopover();
+    await logout();
+  };
+
+  const displayName = user?.name || 'Staff User';
+  const displayEmail = user?.email || 'staff@lionsdenresorts.com';
+  const roleCode =
+    typeof user?.role === 'object' && user.role !== null ? user.role.name || user.role.code : user?.role || 'Staff';
 
   return (
     <>
-      <IconButton
+      <Box
+        component="button"
+        type="button"
         onClick={handleOpenPopover}
         sx={{
-          p: '2px',
-          width: 40,
-          height: 40,
-          background: (theme) =>
-            `conic-gradient(${theme.vars.palette.primary.light}, ${theme.vars.palette.warning.light}, ${theme.vars.palette.primary.light})`,
+          border: 'none',
+          bgcolor: 'transparent',
+          cursor: 'pointer',
+          py: 0.5,
+          px: { xs: 0.5, sm: 1 },
+          borderRadius: 2,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.25,
+          transition: 'background-color 0.2s',
+          '&:hover': {
+            bgcolor: 'action.hover',
+          },
           ...sx,
         }}
-        {...other}
       >
-        <Avatar src={_myAccount.photoURL} alt={_myAccount.displayName} sx={{ width: 1, height: 1 }}>
-          {_myAccount.displayName.charAt(0).toUpperCase()}
+        <Avatar
+          alt={displayName}
+          src="/assets/images/avatar/avatar-25.webp"
+          sx={{ width: 36, height: 36, bgcolor: '#1d68d8', fontSize: 14, fontWeight: 700 }}
+        >
+          {displayName.charAt(0).toUpperCase()}
         </Avatar>
-      </IconButton>
+
+        <Box sx={{ textAlign: 'left', display: { xs: 'none', md: 'block' } }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: 13, color: '#1a202c', lineHeight: 1.2 }}>
+            {displayName}
+          </Typography>
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11, display: 'block', lineHeight: 1.2 }}>
+            {roleCode}
+          </Typography>
+        </Box>
+
+        <Box component="span" sx={{ color: 'text.secondary', display: { xs: 'none', sm: 'inline-flex' }, ml: 0.25, fontSize: 12 }}>
+          ▼
+        </Box>
+      </Box>
 
       <Popover
         open={!!openPopover}
@@ -77,60 +98,33 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         slotProps={{
           paper: {
-            sx: { width: 200 },
+            sx: { width: 240 },
           },
         }}
       >
         <Box sx={{ p: 2, pb: 1.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {_myAccount?.displayName}
+            {displayName}
           </Typography>
 
-          <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {_myAccount?.email}
+          <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }} noWrap>
+            {displayEmail}
           </Typography>
+
+          <Chip
+            size="small"
+            color="primary"
+            variant="filled"
+            label={roleCode}
+            sx={{ fontWeight: 'fontWeightBold' }}
+          />
         </Box>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <MenuList
-          disablePadding
-          sx={{
-            p: 1,
-            gap: 0.5,
-            display: 'flex',
-            flexDirection: 'column',
-            [`& .${menuItemClasses.root}`]: {
-              px: 1,
-              gap: 2,
-              borderRadius: 0.75,
-              color: 'text.secondary',
-              '&:hover': { color: 'text.primary' },
-              [`&.${menuItemClasses.selected}`]: {
-                color: 'text.primary',
-                bgcolor: 'action.selected',
-                fontWeight: 'fontWeightSemiBold',
-              },
-            },
-          }}
-        >
-          {data.map((option) => (
-            <MenuItem
-              key={option.label}
-              selected={option.href === pathname}
-              onClick={() => handleClickItem(option.href)}
-            >
-              {option.icon}
-              {option.label}
-            </MenuItem>
-          ))}
-        </MenuList>
-
-        <Divider sx={{ borderStyle: 'dashed' }} />
-
         <Box sx={{ p: 1 }}>
-          <Button fullWidth color="error" size="medium" variant="text">
-            Logout
+          <Button fullWidth color="error" size="medium" variant="outlined" onClick={handleLogout}>
+            Sign Out
           </Button>
         </Box>
       </Popover>

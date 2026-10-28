@@ -1,7 +1,7 @@
 import type { StackProps } from '@mui/material/Stack';
 
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 
 // ----------------------------------------------------------------------
@@ -11,54 +11,31 @@ export function NavUpgrade({ sx, ...other }: StackProps) {
     <Box
       sx={[
         {
-          mb: 4,
+          mb: 3,
+          p: 2,
+          mx: 2,
           display: 'flex',
           textAlign: 'center',
           alignItems: 'center',
           flexDirection: 'column',
+          bgcolor: 'action.hover',
+          borderRadius: 1.5,
+          border: '1px dashed',
+          borderColor: 'divider',
         },
         ...(Array.isArray(sx) ? sx : [sx]),
       ]}
       {...other}
     >
-      <Typography
-        variant="h6"
-        sx={[
-          (theme) => ({
-            background: `linear-gradient(to right, ${theme.vars.palette.secondary.main}, ${theme.vars.palette.warning.main})`,
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            textFillColor: 'transparent',
-            color: 'transparent',
-          }),
-        ]}
-      >
-        More features?
+      <Typography variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', color: 'primary.main' }}>
+        LionsDen Resorts HQ
       </Typography>
 
-      <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-        {`From only `}
-        <Box component="strong" sx={{ color: 'text.primary' }}>
-          $69
-        </Box>
+      <Typography variant="caption" sx={{ color: 'text.secondary', mt: 0.5, mb: 1 }}>
+        Ahmedabad & Dhari Gir
       </Typography>
 
-      <Box
-        component="img"
-        alt="Minimal dashboard"
-        src="/assets/illustrations/illustration-dashboard.webp"
-        sx={{ width: 200, my: 2 }}
-      />
-
-      <Button
-        href="https://material-ui.com/store/items/minimal-dashboard/"
-        target="_blank"
-        variant="contained"
-        color="inherit"
-      >
-        Upgrade to Pro
-      </Button>
+      <Chip label="System v1.0.0" size="small" variant="outlined" color="primary" sx={{ fontSize: 10 }} />
     </Box>
   );
 }

@@ -24,9 +24,9 @@ export const iconSets = Object.entries(allIcons).reduce((acc, [key, value]) => {
   return acc;
 }, [] as IconifyJSON[]);
 
-export const allIconNames = Object.keys(allIcons) as IconifyName[];
+export const allIconNames = Object.keys(allIcons);
 
-export type IconifyName = keyof typeof allIcons;
+export type IconifyName = (keyof typeof allIcons) | (string & {});
 
 // ----------------------------------------------------------------------
 
