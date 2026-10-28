@@ -11,5 +11,5 @@ export type ConfigValue = {
 export const CONFIG: ConfigValue = {
   appName: 'LionsDen Resorts',
   appVersion: packageJson.version,
-  apiBaseUrl: '/api/v1',
+  apiBaseUrl: import.meta.env.VITE_API_URL || '/api/v1',
 };
